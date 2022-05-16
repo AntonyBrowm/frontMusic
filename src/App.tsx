@@ -1,58 +1,67 @@
 import React from 'react';
-import logo from './logo.svg';
-import { Counter } from './features/counter/Counter';
 import './App.css';
+import Bar from './components/bar_menu/bar';
+import Player from './components/bar_player/player';
+import { Routes, Route, useLocation, useNavigate } from "react-router-dom";
+import Explore from './views/explore/component';
+import Search from './views/search/component';
+import Library from './views/library/component';
+import Account from './views/account/component';
+import Album from './views/album/component';
+import Singer from './views/singer/component';
+import Single from './views/single/component';
+import Login from './views/login/component';
+import {Styles} from "./theme/types";
+import {Box} from "@mui/system";
+import { useAppSelector } from "./app/hooks";
+import { tokenSelector } from "./features/authSlice";
+import { useEffect, useMemo } from "react";
+const publicPaths = ["/login", "/", "/search", "/account", "/album/:id", "/singer/:id", "/single/:id"];
 
-function App() {
-  return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <Counter />
-        <p>
-          Edit <code>src/App.tsx</code> and save to reload.
-        </p>
-        <span>
-          <span>Learn </span>
-          <a
-            className="App-link"
-            href="https://reactjs.org/"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            React
-          </a>
-          <span>, </span>
-          <a
-            className="App-link"
-            href="https://redux.js.org/"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Redux
-          </a>
-          <span>, </span>
-          <a
-            className="App-link"
-            href="https://redux-toolkit.js.org/"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Redux Toolkit
-          </a>
-          ,<span> and </span>
-          <a
-            className="App-link"
-            href="https://react-redux.js.org/"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            React Redux
-          </a>
-        </span>
-      </header>
-    </div>
-  );
+const App = () => {
+  const token = useAppSelector(tokenSelector);
+  const location = useLocation();
+  const navigate = useNavigate();
+  console.log(token);
+  const haveBar = useMemo(() => location.pathname !== "/login", [location]);
+
+  const styles: Styles = {
+    container: {
+      display: "flex",
+      flexDirection: "column",
+      overflow: "hidden",
+      padding: "0.0em 0.80em",
+    },
+    root: {
+      display: "grid",
+      height: "100%",
+      gridTemplateColumns: haveBar ? "200px auto" : "auto",
+    },
+    boxing: {
+      flex: 1,
+      justifyContent: 'flex-end',
+      marginBottom: 30
+    },
+  };
+  return  <>
+
+      <Box sx={styles.container}>   
+      {haveBar && <Bar />}
+        <Routes>
+        <Route path="/" element={<Explore />} />
+        <Route path="/login" element={<Login />} />
+            <Route path="/search" element={<Search />} />
+            <Route path="/library" element={<Library />} />
+            <Route path="/account" element={<Account />} />
+            <Route path="/album/:id" element={<Album />} />
+            <Route path="/singer/:id" element={<Singer />} />
+            <Route path="/single/:id" element={<Single />} />
+        </Routes>
+      </Box>
+      <Box sx={styles.boxing}> 
+      {haveBar && <Player />}
+      </Box>
+  </>
 }
 
 export default App;
